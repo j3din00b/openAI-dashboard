@@ -22,8 +22,8 @@ Copy the .env.local.example file in this directory to .env.local (which will be 
 | Variable | Description |
 | -------- | ----------- |
 | **`OPENAI_API_KEY`** | OpenAI API Key. |
-| **`OPENAI_API_KEY_1...2`** | for multi keys |
-| **`OPENAI_BEARER_TOKEN`** | To get user info, not mandatory. |
+| **`OPENAI_API_SESS`** | OpenAI Bearer session obtained from /features or /subscription routes|
+| **`OPENAI_BEARER_TOKEN`** | To get user info, obtained from /login route  |
 
 ### 3. Run
 ```bash
@@ -36,15 +36,19 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 Routes:
 
 - user info
+obs: token = OPENAI_BEARER_TOKEN
 https://api.openai.com/dashboard/onboarding/login
 
 - graph data
+obs: token = OPENAI_API_SESS
 https://api.openai.com/dashboard/billing/usage?end_date=2023-06-01&start_date=2023-05-01
 
 - soft and hard limit
+obs: token = OPENAI_API_SESS
 https://api.openai.com/dashboard/billing/subscription
 
 - get request number, tokens and context 
+obs: token = OPENAI_API_KEY
 https://api.openai.com/v1/usage?date=2023-05-08
 
 ## Community & Support

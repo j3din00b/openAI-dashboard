@@ -101,11 +101,11 @@ const monthNames = [
 
 const DATEFORMATE = 'yyyy-MM-dd'
 
-const TOTALKEYSFOUNDED = Object.keys(process.env).filter(e => e.startsWith("OPENAI_API_KEY_"))
-const TOKENS:Array<string> = process.env.OPENAI_API_KEY ? [process.env.OPENAI_API_KEY ] : []
+const TOTALKEYSFOUNDED = Object.keys(process.env).filter(e => e.startsWith("OPENAI_API_SESS_"))
+const TOKENS:Array<string> = process.env.OPENAI_API_SESS ? [process.env.OPENAI_API_SESS ] : []
 
 for (let i = 1; i <= TOTALKEYSFOUNDED.length + 1; i++) {
-  const token = process.env[`OPENAI_API_KEY_${i}`];
+  const token = process.env[`OPENAI_API_SESS_${i}`];
   if (token) {
      TOKENS.push(token);
   }
@@ -124,7 +124,11 @@ async function makeFetch(url="", key=""){
       },
       referrerPolicy: "no-referrer",
     }).then(resp => {
+      if(resp.status != 200){
+        console.log(url + " Erro >>>>>>> ", resp?.status, " ---- ", resp?.statusText)
+      }
     if(resp.ok){
+      // console.log(url+"11111111", resp)
       return resp.json()
     }
     throw Error()
@@ -159,6 +163,7 @@ async function getTokensRequests(key:string){
 
 async function getLimitUser(key:string){
   const resp = await makeFetch(URLLIMITS, key)
+  console.log(">>>>", resp, key)
 
   return resp
 }
@@ -216,8 +221,9 @@ class OpenAiAnalytics {
   filterModels: Array<string> | null
   tokensAndRequests: Array<any> | null
   limites: Array<any> | null
-  constructor(token:string){
-     this.keySelect           = token ?? process.env.OPENAI_API_KEY
+  constructor(token:string, session?:string){
+     this.apiKey              = session ?? process.env.OPENAI_API_KEY
+     this.keySelect           = token ?? process.env.OPENAI_API_SESS
      this.totalkeys           = TOTALKEYSFOUNDED
      this.keyName             = []
      this.costsItems          = null
@@ -231,8 +237,9 @@ class OpenAiAnalytics {
      this.limites             = null
     }
     async update(key=this.keySelect){
-      const tokens = await getTokensRequests(key)
+      const tokens = await getTokensRequests(this.apiKey)
       const limits = await getLimitUser(key)
+
       this.limites = limits
       this.tokensAndRequests = tokens
     }
@@ -286,7 +293,7 @@ class OpenAiAnalytics {
 
 }
 
-export const OpenAiWrapper = new OpenAiAnalytics(process.env.OPENAI_API_KEY ?? "")
+export const OpenAiWrapper = new OpenAiAnalytics(process.env.OPENAI_API_SESS ?? "", process.env.OPENAI_API_KEY)
 
 async function createAnalyticsInstance(token?:string, start?:string, end?:string) {
   if(token){
