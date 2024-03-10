@@ -43,7 +43,6 @@ const DashBoardCli = (props:DashboardView) => {
    }
 
    function setPeriodo(periodo){
-    console.log(periodo)
     const params = new URLSearchParams(window.location.search);
     
     if(periodo[0]){
@@ -69,8 +68,6 @@ const DashBoardCli = (props:DashboardView) => {
 
     // setValue(periodo)
    }
-
-   console.log(value)
 
    return(
       <>

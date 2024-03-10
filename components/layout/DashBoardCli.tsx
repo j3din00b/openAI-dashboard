@@ -24,7 +24,8 @@ import {
   UserIcon,
 } from "@heroicons/react/outline";
 
-import { Billing, Costs, tokensRequests } from "@/app/api/openai/WrapperAPI";
+import { Billing, Costs, tokens, tokensRequests } from "@/app/api/openai/WrapperAPI";
+
 
 // constantes
 const colors: Color[] = ["blue", "amber", "rose", "indigo", "emerald", "pink", "teal"];
@@ -290,18 +291,18 @@ const dataExemplo = [
   },
 ];
 
-function processArray(data: Array<any>) {
+function processArray(data: tokens) {
   const result = {};
   const dataOn = ["data", "dalle_api_data", "ft_data", "whisper_api_data"];
 
-  for (const item of data) {
+  for (const item of Object.entries(data)) {
     const hasData = dataOn.some((key) => {
-      return item.value?.[key]?.length > 0;
+      return item[0] == key && item[1]?.length > 0;
     });
 
     if (hasData) {
       for (const tipo of dataOn) {
-        for (const subItem of item.value[tipo]) {
+        for (const subItem of data[tipo]) {
           const key = subItem.snapshot_id
             ? subItem.snapshot_id
             : tipo.replaceAll("_", "-");

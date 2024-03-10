@@ -12,7 +12,7 @@ export default async function Home({
 
     const token = searchParams.t ?? null;
     const analytics = await OpenAiAnalytics(token, searchParams.start, searchParams.end)
-  
+    
   return (
     <>
       <div className="z-10 w-full space-y-4 p-8 pt-6 max-w-[1280px] mx-auto">

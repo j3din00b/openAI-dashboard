@@ -78,11 +78,57 @@ export interface tokensRequests {
   value: Value;
 }
 
+
+
+
+
+
+
+
+
+export interface tokens {
+  object: string;
+  data?: (DataEntity)[] | null;
+  ft_data?: (null)[] | null;
+  dalle_api_data?: (null)[] | null;
+  whisper_api_data?: (WhisperApiDataEntity)[] | null;
+  tts_api_data?: (null)[] | null;
+  assistant_code_interpreter_data?: (null)[] | null;
+}
+export interface DataEntity {
+  organization_id: string;
+  organization_name: string;
+  aggregation_timestamp: number;
+  n_requests: number;
+  operation: string;
+  snapshot_id: string;
+  n_context_tokens_total: number;
+  n_generated_tokens_total: number;
+  email: string;
+  api_key_id: string;
+  api_key_name: string;
+  api_key_redacted: string;
+}
+export interface WhisperApiDataEntity {
+  timestamp: number;
+  model_id: string;
+  num_seconds: number;
+  num_requests: number;
+  user_id: string;
+  organization_id: string;
+  api_key_id: string;
+  api_key_name: string;
+  api_key_redacted: string;
+  organization_name: string;
+}
+
+
 // URLs used
 const URLAPIKEYS            = `https://api.openai.com/dashboard/user/api_keys`
 const URLUSAGE              = `https://api.openai.com/dashboard/billing/usage`
 const URLLIMITS             = 'https://api.openai.com/dashboard/billing/subscription'
-const URLREQUESTSANDTOKENS  = 'https://api.openai.com/v1/usage?date='
+const URLREQUESTSANDTOKENS  = 'https://api.openai.com/v1/dashboard/activity'
+// const URLREQUESTSANDTOKENS  = 'https://api.openai.com/v1/usage?date='
 
 const monthNames = [
   "January",
@@ -109,6 +155,28 @@ for (let i = 1; i <= TOTALKEYSFOUNDED.length + 1; i++) {
   if (token) {
      TOKENS.push(token);
   }
+}
+
+async function makeFetchv2(url="", key="") {
+  
+  const res = await fetch(url, {
+    headers: {
+      'Host': 'api.openai.com',
+      'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0',
+      'accept': '*/*',
+      'accept-language': 'en-US,en;q=0.5',
+      'referer': 'https://platform.openai.com/',
+      'authorization': 'Bearer '+key,
+      'origin': 'https://platform.openai.com',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-site',
+      'te': 'trailers'
+    }
+  });
+
+  const data = await res?.json()
+  return data
 }
 
 async function makeFetch(url="", key=""){
@@ -148,23 +216,33 @@ async function makeFetch(url="", key=""){
 //   return []
 // }
 
-async function getTokensRequests(key:string){
-  const tokensDay = Array.from({length: new Date().getDate() + 1}, (_, i) => i + 1)
-  let requestTokens = []
+// const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  for(const day of tokensDay){
-    const currentDay = new Date()
-    currentDay.setDate(day)
-    requestTokens.push(makeFetch(`${URLREQUESTSANDTOKENS}${format(currentDay, DATEFORMATE)}`, key))
-  }
+async function getTokensTotal(key:string, start:string, end:string):Promise<tokens>{
+  const urlFinal = URLREQUESTSANDTOKENS+`?start_date=${start}&end_date=${end}`
+  const resp = await makeFetchv2(urlFinal, key)
+  return resp
+}
+
+async function getTokensRequests(key:string, ){
+  // const tokensDay = Array.from({length: new Date().getDate() + 1}, (_, i) => i + 1)
+  // let requestTokens = []
+  // console.log("fetch len >$", tokensDay.length)
+
+
+  // const currentDay = new Date()
+  // currentDay.setDate(day)
+  // requestTokens.push(makeFetch(`${URLREQUESTSANDTOKENS}${format(currentDay, DATEFORMATE)}`, key))
+
+  // for(const day of tokensDay){
+  //   // await sleep(500)
+  // }
 
   return await Promise.allSettled(requestTokens)
 }
 
 async function getLimitUser(key:string){
   const resp = await makeFetch(URLLIMITS, key)
-  console.log(">>>>", resp, key)
-
   return resp
 }
 
@@ -212,6 +290,7 @@ class OpenAiAnalytics {
   keySelect
   totalkeys
   keyName: Array<any>
+  apiKey
   costsItems: Costs | null
   showModels: Array<string>
   costsStartDate
@@ -221,9 +300,9 @@ class OpenAiAnalytics {
   filterModels: Array<string> | null
   tokensAndRequests: Array<any> | null
   limites: Array<any> | null
-  constructor(token:string, session?:string){
-     this.apiKey              = session ?? process.env.OPENAI_API_KEY
-     this.keySelect           = token ?? process.env.OPENAI_API_SESS
+  constructor(session?:string, token:string){
+     this.apiKey              = token ?? process.env.OPENAI_API_KEY
+     this.keySelect           = session ?? process.env.OPENAI_API_SESS
      this.totalkeys           = TOTALKEYSFOUNDED
      this.keyName             = []
      this.costsItems          = null
@@ -237,11 +316,13 @@ class OpenAiAnalytics {
      this.limites             = null
     }
     async update(key=this.keySelect){
-      const tokens = await getTokensRequests(this.apiKey)
+      if(this.keySelect){
+        const tokens = await getTokensTotal(this.keySelect, this.costsStartDate, this.costsEndDate)
+        this.tokensAndRequests = tokens
+      }
       const limits = await getLimitUser(key)
 
       this.limites = limits
-      this.tokensAndRequests = tokens
     }
 
     async selectKey(key:string){
@@ -300,6 +381,7 @@ async function createAnalyticsInstance(token?:string, start?:string, end?:string
     OpenAiWrapper.selectKey(token)
   }
   
+  // obs
   await OpenAiWrapper.costs(OpenAiWrapper.keySelect , start, end)
   await OpenAiWrapper.update();
   return OpenAiWrapper
