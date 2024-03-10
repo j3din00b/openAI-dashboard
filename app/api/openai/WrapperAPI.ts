@@ -381,8 +381,8 @@ async function createAnalyticsInstance(token?:string, start?:string, end?:string
     OpenAiWrapper.selectKey(token)
   }
   
-  // obs
-  await OpenAiWrapper.costs(OpenAiWrapper.keySelect , start, end)
+  // obs end = today + 1
+  await OpenAiWrapper.costs(OpenAiWrapper.keySelect , start,  format(addDays(new Date(), 1), DATEFORMATE))
   await OpenAiWrapper.update();
   return OpenAiWrapper
 }

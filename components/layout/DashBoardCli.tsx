@@ -97,9 +97,13 @@ const DonutChartw = ({ data, total, totalSemFormato, billing }:{data: Array<any>
 
 interface DataItem {
    label: string;
+   "GPT-4 Turbo": number;
+   "GPT-4": number;
+   "GPT-3.5 Turbo": number;
+   "Assistants API": number;
+   "Base models": number;
    "Instruct models": number;
    "Chat models": number;
-   "GPT-4": number;
    "Fine-tuned models": number;
    "Embedding models": number;
    "Image models": number;
@@ -111,25 +115,35 @@ interface DataItem {
  
      let totalItem: DataItem = {
      label: "",
-     "Instruct models": 0,
-     "Chat models": 0,
+     "GPT-4 Turbo": 0,
      "GPT-4": 0,
+     "GPT-3.5 Turbo": 0,
+     "Assistants API": 0,
      "Fine-tuned models": 0,
      "Embedding models": 0,
+     "Base models":0,
      "Image models": 0,
      "Audio models": 0,
+
+     "Instruct models": 0,
+     "Chat models": 0,
    };
  
  for (const item of input) {
      totalItem = {
        label: item.label,
-       "Instruct models": totalItem["Instruct models"] + item["Instruct models"],
-       "Chat models": totalItem["Chat models"] + item["Chat models"],
+       "GPT-4 Turbo": totalItem["GPT-4 Turbo"] + item["GPT-4 Turbo"],
        "GPT-4": totalItem["GPT-4"] + item["GPT-4"],
+       "GPT-3.5 Turbo": totalItem["GPT-3.5 Turbo"] + item["GPT-3.5 Turbo"],
+       "Assistants API": totalItem["Assistants API"] + item["Assistants API"],
+       "Base models": totalItem["Base models"] + item["Base models"],
        "Fine-tuned models": totalItem["Fine-tuned models"] + item["Fine-tuned models"],
        "Embedding models": totalItem["Embedding models"] + item["Embedding models"],
        "Image models": totalItem["Image models"] + item["Image models"],
        "Audio models": totalItem["Audio models"] + item["Audio models"],
+
+       "Instruct models": totalItem["Instruct models"] + item["Instruct models"],
+       "Chat models": totalItem["Chat models"] + item["Chat models"],
      };
  
      output.push(totalItem);
