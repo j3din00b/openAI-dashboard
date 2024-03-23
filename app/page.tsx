@@ -3,12 +3,20 @@ import { Suspense } from 'react';
 import Loading from "./loading"
 import OpenAiAnalytics from "app/api/openai/WrapperAPI"
 import KeySelectComponent from "@/components/layout/DashKeySelect"
+import { GET, GETCACHED } from "./api/userInfo/router";
+
+
 
 export default async function Home({
     searchParams
   }: {
     searchParams: { t: string, start: string, end: string, dt: string };
   }) {
+    
+    // const openai = await GET().then(e => e.json())
+    const openai = await GETCACHED()
+
+    // console.log("@@@@@@@@@@@@22", openai)
 
     const token = searchParams.t ?? null;
     const analytics = await OpenAiAnalytics(token, searchParams.start, searchParams.end)

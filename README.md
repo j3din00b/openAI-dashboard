@@ -21,8 +21,7 @@ Copy the .env.local.example file in this directory to .env.local (which will be 
 
 | Variable | Description |
 | -------- | ----------- |
-| **`OPENAI_API_KEY`** | OpenAI API Key. |
-| **`OPENAI_API_SESS`** | OpenAI Bearer session obtained from /features or /subscription routes|
+| **`OPENAI_API_KEY`**      | sk-... > OpenAI API Key. |
 | **`OPENAI_BEARER_TOKEN`** | To get user info, obtained from /login route  |
 
 ### 3. Run

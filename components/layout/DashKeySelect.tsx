@@ -71,20 +71,21 @@ const DashBoardCli = (props:DashboardView) => {
 
    return(
       <>
-      <Flex className="px-4">
+      <Flex className="px-2">
   
           <Title>OpenAI Analytics</Title>
-          <div className="w-full max-w-3xl items-end flex md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 flex-col">
-            <SelectBox
+          <div className="w-full max-w-3xl  justify-end items-end flex md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 flex-col">
+            {/* <SelectBox
                 onValueChange={(value) => setToken(value)}
                 defaultValue={props.keySelect}
             >
                 {props.listKeys?.map(key => {
                   return <SelectBoxItem key={key} value={key} text={key} icon={KeyIcon} />
                 })}
-            </SelectBox>
+            </SelectBox> */}
+            
   
-            <DateRangePicker value={value} className="max-w-sm mx-auto" onValueChange={setPeriodo}/>
+            <DateRangePicker value={value} className="max-w-sm " onValueChange={setPeriodo}/>
         </div>
       </Flex>
       {isPending && (

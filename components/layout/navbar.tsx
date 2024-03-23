@@ -10,6 +10,7 @@ import { Session } from "next-auth";
 export default function NavBar({ session, openai }: { session: Session | null , openai: any}) {
   const { SignInModal, setShowSignInModal } = useSignInModal();
   const scrolled = useScroll(50);
+  console.log("<<<<<<<", openai)
 
   return (
     <>
@@ -39,8 +40,8 @@ export default function NavBar({ session, openai }: { session: Session | null , 
               <>
               <Image
                 className="rounded-full"
-                alt={openai.user.user?.email ?? 'email'}
-                src={openai.user.user?.picture                  || `https://avatars.dicebear.com/api/micah/${openai.user.user?.email}.svg`}
+                alt={openai.user?.email ?? 'email'}
+                src={openai.user?.picture                  || `https://avatars.dicebear.com/api/micah/${openai.user?.email}.svg`}
                 width={40}
                 height={40}
               />

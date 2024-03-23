@@ -193,7 +193,7 @@ async function makeFetch(url="", key=""){
       referrerPolicy: "no-referrer",
     }).then(resp => {
       if(resp.status != 200){
-        console.log(url + " Erro >>>>>>> ", resp?.status, " ---- ", resp?.statusText)
+        console.log(url + " Erro >>>>>>> ", resp?.status, " ---- ", resp?.statusText, "key = ", key)
       }
     if(resp.ok){
       // console.log(url+"11111111", resp)
@@ -374,9 +374,21 @@ class OpenAiAnalytics {
 
 }
 
-export const OpenAiWrapper = new OpenAiAnalytics(process.env.OPENAI_API_SESS ?? "", process.env.OPENAI_API_KEY)
+export let OpenAiWrapper:OpenAiAnalytics | null  = null;
+
+let instanciado = false
 
 async function createAnalyticsInstance(token?:string, start?:string, end?:string) {
+
+  if(!instanciado){
+    OpenAiWrapper =  new OpenAiAnalytics(process.env.OPENAI_API_SESS ?? "", process.env.OPENAI_API_KEY)
+    instanciado = true
+  }
+
+  if(!OpenAiWrapper){
+    return null
+  }
+
   if(token){
     OpenAiWrapper.selectKey(token)
   }
